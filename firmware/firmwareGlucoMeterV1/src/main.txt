@@ -1,0 +1,63 @@
+#include <Wire.h>
+#include <Adafruit_PN532.h>
+
+#define SDA_PIN A4
+#define SCL_PIN A5
+
+Adafruit_PN532 nfc(SDA_PIN, SCL_PIN);
+
+void setup(void) {
+  Serial.begin(115200);
+  while (!Serial) delay(10); 
+  Serial.println("Inicio del lector NFC");
+
+  nfc.begin();
+
+  uint32_t versiondata = nfc.getFirmwareVersion();
+  if (!versiondata) {
+    Serial.print("No se encontró un lector NFC PN53x");
+    while (1); 
+  }
+  nfc.SAMConfig();
+  Serial.println("Lector NFC iniciado");
+}
+
+void loop(void) {
+  uint8_t success;
+  uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };  
+  uint8_t uidLength;
+
+  success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
+
+  if (success) {
+    Serial.println("Chip NFC detectado!");
+
+    Serial.print("UID Tamaño: "); Serial.print(uidLength, DEC); Serial.println(" bytes");
+    Serial.print("UID Valor: ");
+    nfc.PrintHex(uid, uidLength);
+
+    Serial.println("");
+    
+    // Intentar autenticarse con el chip (esto es específico para FreeStyle Libre 2)
+    uint8_t key[] = {0x11, 0x11, 0x11, 0x11, 0x11, 0x11}; // Clave de autenticación
+    success = nfc.mifareclassic_AuthenticateBlock(uid, uidLength, 4, 0, key);
+
+    if (success) {
+      Serial.println("Autenticación exitosa!");
+    } else {
+      Serial.println("Error de autenticación.");
+    }
+    
+    delay(1000);
+  }
+}
+
+void PrintHex(uint8_t *data, uint32_t numBytes) {
+  uint32_t szPos;
+
+  for (szPos = 0; szPos < numBytes; szPos++) {
+    Serial.print("0x"); Serial.print(data[szPos] < 0x10 ? "0" : "");
+    Serial.print(data[szPos], HEX); Serial.print(" ");
+  }
+  Serial.println("");
+}

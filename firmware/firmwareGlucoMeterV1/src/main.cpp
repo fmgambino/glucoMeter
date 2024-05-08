@@ -1,5 +1,4 @@
 #include <Wire.h>
-#include <SPI.h>
 #include <Adafruit_PN532.h>
 
 #define SDA_PIN A4
@@ -15,13 +14,13 @@ void setup(void) {
 
   uint32_t versiondata = nfc.getFirmwareVersion();
   if (!versiondata) {
-    Serial.println("No se encontró la placa PN53x");
-    while (1); // Hacer un bucle infinito si no encuentra el módulo
+    Serial.print("No se encontró la placa PN53x");
+    while (1); // Detiene el programa si no se detecta el PN532
   }
 
-  // Configura el PN532 para leer tags NFC
   nfc.SAMConfig();
-  Serial.println("Esperando por una etiqueta NFC...");
+
+  Serial.println("Esperando una tarjeta NFC...");
 }
 
 void loop(void) {
@@ -29,18 +28,19 @@ void loop(void) {
   uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };
   uint8_t uidLength;
 
+  // Intentamos leer una tarjeta NFC
   success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
 
+  // Verificamos si se ha encontrado una tarjeta
   if (success) {
-    Serial.println("¡Se encontró una etiqueta NFC!");
+    Serial.println("¡Se encontró una tarjeta NFC!");
 
-    Serial.print("Longitud UID: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
-    Serial.print("Valor UID: ");
-    for (uint8_t i=0; i < uidLength; i++) {
-      Serial.print(" 0x");Serial.print(uid[i], HEX);
-    }
-    Serial.println("");
+    Serial.print("Longitud del UID: ");
+    Serial.print(uidLength, DEC);
+    Serial.println(" bytes");
+    Serial.print("Valor del UID: ");
+    nfc.PrintHex(uid, uidLength);
 
-    delay(1000); // Espera un segundo antes de leer la siguiente etiqueta
+    delay(1000); // Espera un poco antes de volver a escanear
   }
 }
