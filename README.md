@@ -55,6 +55,10 @@ Conectar el lector RC522 al Arduino Nano utilizando el protocolo ICSP:
 - RST -> Pin 9
 - 3.3V -> 3.3V
 
+## 📋 Esquema de Conexión ARDUINO NANO & LECTOR RC522:
+
+![Esquema de Conexión ARDUINO NANO & LECTOR RC522](https://i.ibb.co/C0sS1SP/esquema-Nano-RC522-icsp.jpg)
+
 ### Lector PN532 (Modelo Rojo)
 
 Conectar el lector PN532 al Arduino Nano utilizando el protocolo I2C:
@@ -63,6 +67,10 @@ Conectar el lector PN532 al Arduino Nano utilizando el protocolo I2C:
 - SCL -> A5
 - VCC -> 3.3V
 - GND -> GND
+
+## 📋 Esquema de Conexión ARDUINO NANO & LECTOR RC522:
+
+![Esquema de Conexión ARDUINO NANO & LECTOR RC522](https://i.ibb.co/89rtvd4/esquema-Nano-RC522-i2c.jpg)
 
 ## Información sobre el Parche FreeStyle
 
